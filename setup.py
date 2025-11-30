@@ -13,7 +13,7 @@ setup(
     description="Machine Learning pipeline for predicting League of Legends esports match outcomes",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/lol-esports-prediction",
+    url="https://github.com/Andrew-Fojas/lol-esports-prediction",
     license="MIT",
     packages=find_packages(exclude=["tests", "tests.*", "notebooks"]),
     install_requires=[
