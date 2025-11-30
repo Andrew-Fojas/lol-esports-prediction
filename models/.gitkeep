@@ -1,0 +1,7 @@
+# This directory will contain saved model artifacts after training
+#
+# Models are saved as .pkl files by the training pipeline
+# They are excluded from git via .gitignore due to file size
+#
+# To generate models, run:
+#   python scripts/train_all_models.py

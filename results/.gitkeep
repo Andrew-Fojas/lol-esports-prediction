@@ -1,0 +1,11 @@
+# This directory will contain evaluation visualizations after training
+#
+# Results include:
+#   - Confusion matrices
+#   - ROC curves
+#   - Precision-recall curves
+#   - PCA permutation test plots
+#
+# To generate results, run:
+#   python scripts/run_feature_engineering.py
+#   python scripts/train_all_models.py
