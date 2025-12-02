@@ -29,7 +29,7 @@ def filter_team_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         DataFrame filtered to team-level data only.
     """
-    team_data = df[df["position"] == "team"].copy()
+    team_data = df[df['position'] == 'team'].copy()
     team_data.reset_index(drop=True, inplace=True)
 
     logger.info(f"Original rows: {len(df):,}")
@@ -51,7 +51,7 @@ def filter_complete_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         DataFrame containing only complete observations.
     """
-    complete_data = df[df["datacompleteness"] == "complete"].copy()
+    complete_data = df[df['datacompleteness'] == 'complete'].copy()
     complete_data.reset_index(drop=True, inplace=True)
 
     logger.info(f"Original rows: {len(df):,}")
@@ -90,7 +90,8 @@ def filter_team_features(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess_pipeline(
-    input_filepath: Path, save_intermediate: bool = True
+    input_filepath: Path,
+    save_intermediate: bool = True
 ) -> pd.DataFrame:
     """
     Execute the complete preprocessing pipeline.

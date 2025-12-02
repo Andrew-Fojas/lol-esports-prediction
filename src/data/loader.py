@@ -69,15 +69,16 @@ def load_processed_data(
         FileNotFoundError: If the data file doesn't exist.
     """
     file_map = {
-        "team": TEAM_DATA_FILE,
-        "complete": COMPLETE_TEAM_DATA_FILE,
-        "metrics": TEAM_METRICS_FILE,
-        "pca": PCA_TRANSFORMED_FILE,
+        'team': TEAM_DATA_FILE,
+        'complete': COMPLETE_TEAM_DATA_FILE,
+        'metrics': TEAM_METRICS_FILE,
+        'pca': PCA_TRANSFORMED_FILE
     }
 
     if data_type not in file_map:
         raise ValueError(
-            f"Invalid data_type '{data_type}'. " f"Choose from: {list(file_map.keys())}"
+            f"Invalid data_type '{data_type}'. "
+            f"Choose from: {list(file_map.keys())}"
         )
 
     filepath = file_map[data_type]

@@ -8,7 +8,7 @@ The work started in Jupyter Notebooks for exploration and prototyping, then evol
 
 ## Project Motivation
 
-League of Legends is a complex game where teams must balance multiple objectives: securing gold leads, controlling map objectives like dragons and barons, maintaining vision, and winning fights.
+League of Legends is a complex game where teams must balance multiple objectives: securing gold leads, controlling map objectives like dragons and barons, maintaining vision, and winning fights. 
 
 This project investigates which factors are most predictive of match outcomes using machine learning, and explores how different modeling approaches handle the nonlinear relationships in competitive esports data.
 

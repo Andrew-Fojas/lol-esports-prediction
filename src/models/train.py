@@ -24,61 +24,61 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MODEL_CONFIGS = {
-    "naive_bayes": {
-        "model": GaussianNB(),
-        "param_grid": None,  # No hyperparameters to tune for Gaussian NB
-        "use_scaler": False,
+    'naive_bayes': {
+        'model': GaussianNB(),
+        'param_grid': None,  # No hyperparameters to tune for Gaussian NB
+        'use_scaler': False
     },
-    "logistic_regression": {
-        "model": LogisticRegression(random_state=RANDOM_STATE, max_iter=1000),
-        "param_grid": {
-            "C": [0.1, 1.0, 10.0],
-            "penalty": ["l2"],
-            "solver": ["lbfgs", "liblinear"],
+    'logistic_regression': {
+        'model': LogisticRegression(random_state=RANDOM_STATE, max_iter=1000),
+        'param_grid': {
+            'C': [0.1, 1.0, 10.0],
+            'penalty': ['l2'],
+            'solver': ['lbfgs', 'liblinear']
         },
-        "use_scaler": False,
+        'use_scaler': False
     },
-    "decision_tree": {
-        "model": DecisionTreeClassifier(random_state=RANDOM_STATE),
-        "param_grid": {
-            "max_depth": [3, 5, 10, 20, None],
-            "min_samples_split": [2, 5, 10],
-            "min_samples_leaf": [1, 2, 4],
+    'decision_tree': {
+        'model': DecisionTreeClassifier(random_state=RANDOM_STATE),
+        'param_grid': {
+            'max_depth': [3, 5, 10, 20, None],
+            'min_samples_split': [2, 5, 10],
+            'min_samples_leaf': [1, 2, 4]
         },
-        "use_scaler": False,
+        'use_scaler': False
     },
-    "random_forest": {
-        "model": RandomForestClassifier(random_state=RANDOM_STATE),
-        "param_grid": {
-            "n_estimators": [50, 100, 150],
-            "max_depth": [5, 10, 20],
-            "min_samples_split": [2, 5],
-            "min_samples_leaf": [1, 2],
+    'random_forest': {
+        'model': RandomForestClassifier(random_state=RANDOM_STATE),
+        'param_grid': {
+            'n_estimators': [50, 100, 150],
+            'max_depth': [5, 10, 20],
+            'min_samples_split': [2, 5],
+            'min_samples_leaf': [1, 2]
         },
-        "use_scaler": False,
+        'use_scaler': False
     },
-    "gradient_boosting": {
-        "model": GradientBoostingClassifier(random_state=RANDOM_STATE),
-        "param_grid": {
-            "n_estimators": [100, 150, 200],
-            "learning_rate": [0.01, 0.1, 0.3],
-            "max_depth": [3, 5, 7],
-            "subsample": [0.75, 1.0],
+    'gradient_boosting': {
+        'model': GradientBoostingClassifier(random_state=RANDOM_STATE),
+        'param_grid': {
+            'n_estimators': [100, 150, 200],
+            'learning_rate': [0.01, 0.1, 0.3],
+            'max_depth': [3, 5, 7],
+            'subsample': [0.75, 1.0]
         },
-        "use_scaler": False,
+        'use_scaler': False
     },
-    "bagging": {
-        "model": BaggingClassifier(
+    'bagging': {
+        'model': BaggingClassifier(
             estimator=DecisionTreeClassifier(random_state=RANDOM_STATE),
-            random_state=RANDOM_STATE,
+            random_state=RANDOM_STATE
         ),
-        "param_grid": {
-            "n_estimators": [50, 75, 100, 150],
-            "max_samples": [0.5, 0.7, 1.0],
-            "max_features": [0.5, 0.7, 1.0],
+        'param_grid': {
+            'n_estimators': [50, 75, 100, 150],
+            'max_samples': [0.5, 0.7, 1.0],
+            'max_features': [0.5, 0.7, 1.0]
         },
-        "use_scaler": False,
-    },
+        'use_scaler': False
+    }
 }
 
 
@@ -88,7 +88,7 @@ def train_model(
     tune_hyperparameters: bool = True,
     mlflow_tracking: bool = True,
     save_model: bool = True,
-    save_visualizations: bool = True,
+    save_visualizations: bool = True
 ) -> BaseModel:
     """
     Train a single model.
@@ -115,15 +115,15 @@ def train_model(
 
     # Load data
     if data is None:
-        data = load_processed_data("pca")
+        data = load_processed_data('pca')
 
     # Prepare features and target
-    X = data.drop("result", axis=1)
-    y = data["result"]
+    X = data.drop('result', axis=1)
+    y = data['result']
 
     # Get model configuration
     config = MODEL_CONFIGS[model_type]
-    model_name = model_type.replace("_", " ").title()
+    model_name = model_type.replace('_', ' ').title()
 
     logger.info("=" * 60)
     logger.info(f"Training {model_name}")
@@ -131,11 +131,11 @@ def train_model(
 
     # Create model instance
     base_model = BaseModel(
-        model=config["model"],
-        param_grid=config["param_grid"],
+        model=config['model'],
+        param_grid=config['param_grid'],
         model_name=model_name,
-        use_scaler=config["use_scaler"],
-        mlflow_tracking=mlflow_tracking,
+        use_scaler=config['use_scaler'],
+        mlflow_tracking=mlflow_tracking
     )
 
     # Prepare data (includes train/test split and scaling)
@@ -166,7 +166,7 @@ def train_all_models(
     data: Optional[pd.DataFrame] = None,
     tune_hyperparameters: bool = True,
     mlflow_tracking: bool = False,
-    save_models: bool = True,
+    save_models: bool = True
 ) -> Dict[str, BaseModel]:
     """
     Train all configured models.
@@ -197,7 +197,7 @@ def train_all_models(
                 data=data,
                 tune_hyperparameters=tune_hyperparameters,
                 mlflow_tracking=mlflow_tracking,
-                save_model=save_models,
+                save_model=save_models
             )
             trained_models[model_type] = model
         except Exception as e:
@@ -226,17 +226,17 @@ def compare_models(trained_models: Dict[str, BaseModel]) -> pd.DataFrame:
     for model_type, model in trained_models.items():
         if model.test_metrics:
             row = {
-                "Model": model.model_name,
-                "Accuracy": model.test_metrics.get("accuracy", np.nan),
-                "Precision": model.test_metrics.get("precision", np.nan),
-                "Recall": model.test_metrics.get("recall", np.nan),
-                "F1 Score": model.test_metrics.get("f1_score", np.nan),
-                "ROC AUC": model.test_metrics.get("roc_auc", np.nan),
-                "Log Loss": model.test_metrics.get("log_loss", np.nan),
+                'Model': model.model_name,
+                'Accuracy': model.test_metrics.get('accuracy', np.nan),
+                'Precision': model.test_metrics.get('precision', np.nan),
+                'Recall': model.test_metrics.get('recall', np.nan),
+                'F1 Score': model.test_metrics.get('f1_score', np.nan),
+                'ROC AUC': model.test_metrics.get('roc_auc', np.nan),
+                'Log Loss': model.test_metrics.get('log_loss', np.nan)
             }
 
             if model.cv_results:
-                row["Best CV F1"] = model.cv_results.get("best_score", np.nan)
+                row['Best CV F1'] = model.cv_results.get('best_score', np.nan)
 
             comparison_data.append(row)
 
@@ -246,7 +246,7 @@ def compare_models(trained_models: Dict[str, BaseModel]) -> pd.DataFrame:
         logger.warning("No models were successfully trained. Cannot create comparison.")
         return comparison_df
 
-    comparison_df = comparison_df.sort_values("F1 Score", ascending=False)
+    comparison_df = comparison_df.sort_values('F1 Score', ascending=False)
 
     logger.info("\n" + "=" * 80)
     logger.info("MODEL COMPARISON")

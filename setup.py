@@ -1,8 +1,7 @@
 """Setup configuration for LoL Esports Prediction package."""
 
+from setuptools import setup, find_packages
 from pathlib import Path
-
-from setuptools import find_packages, setup
 
 # Read the contents of README file
 this_directory = Path(__file__).parent
@@ -11,10 +10,7 @@ long_description = (this_directory / "README.md").read_text()
 setup(
     name="lol-esports-prediction",
     version="0.1.0",
-    description=(
-        "Machine Learning pipeline for predicting League of Legends "
-        "esports match outcomes"
-    ),
+    description="Machine Learning pipeline for predicting League of Legends esports match outcomes",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Andrew-Fojas/lol-esports-prediction",

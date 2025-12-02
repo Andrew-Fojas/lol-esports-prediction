@@ -103,7 +103,6 @@ module = [
     "shap.*",
 ]
 ignore_missing_imports = true
-ignore_errors = true
 
 [tool.pytest.ini_options]
 minversion = "7.0"
