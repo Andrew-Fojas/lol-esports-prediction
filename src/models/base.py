@@ -39,7 +39,7 @@ class BaseModel:
         param_grid: Optional[Dict] = None,
         model_name: str = "Model",
         use_scaler: bool = False,
-        mlflow_tracking: bool = True
+        mlflow_tracking: bool = True,
     ):
         """
         Initialize base model.
@@ -68,7 +68,7 @@ class BaseModel:
         X: pd.DataFrame,
         y: pd.Series,
         test_size: float = TEST_SIZE,
-        random_state: int = RANDOM_STATE
+        random_state: int = RANDOM_STATE,
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         """
         Prepare data with train/test split and optional scaling.
@@ -96,7 +96,7 @@ class BaseModel:
         if self.use_scaler:
             self.scaler = StandardScaler()
             X_train = self.scaler.fit_transform(X_train)  # Fit on train only
-            X_test = self.scaler.transform(X_test)         # Transform test
+            X_test = self.scaler.transform(X_test)  # Transform test
             logger.info("Applied StandardScaler to features")
 
         return X_train, X_test, y_train, y_test
@@ -105,7 +105,7 @@ class BaseModel:
         self,
         X_train: np.ndarray,
         y_train: np.ndarray,
-        tune_hyperparameters: bool = True
+        tune_hyperparameters: bool = True,
     ):
         """
         Train the model with optional hyperparameter tuning.
@@ -123,17 +123,17 @@ class BaseModel:
                 estimator=self.model,
                 param_grid=self.param_grid,
                 cv=CV_FOLDS,
-                scoring='f1',
+                scoring="f1",
                 n_jobs=-1,
-                verbose=1
+                verbose=1,
             )
             grid_search.fit(X_train, y_train)
 
             self.best_model = grid_search.best_estimator_
             self.cv_results = {
-                'best_params': grid_search.best_params_,
-                'best_score': grid_search.best_score_,
-                'cv_results': grid_search.cv_results_
+                "best_params": grid_search.best_params_,
+                "best_score": grid_search.best_score_,
+                "cv_results": grid_search.cv_results_,
             }
 
             logger.info(f"Best parameters: {grid_search.best_params_}")
@@ -143,11 +143,7 @@ class BaseModel:
             self.best_model.fit(X_train, y_train)
             logger.info("Model training complete (no hyperparameter tuning)")
 
-    def predict(
-        self,
-        X: np.ndarray,
-        return_proba: bool = False
-    ) -> np.ndarray:
+    def predict(self, X: np.ndarray, return_proba: bool = False) -> np.ndarray:
         """
         Make predictions on new data.
 
@@ -159,7 +155,7 @@ class BaseModel:
             Predictions (binary labels or probabilities).
         """
         if return_proba:
-            if hasattr(self.best_model, 'predict_proba'):
+            if hasattr(self.best_model, "predict_proba"):
                 return self.best_model.predict_proba(X)[:, 1]
             else:
                 logger.warning(f"{self.model_name} doesn't support predict_proba")
@@ -168,10 +164,7 @@ class BaseModel:
             return self.best_model.predict(X)
 
     def evaluate(
-        self,
-        X_test: np.ndarray,
-        y_test: np.ndarray,
-        save_visualizations: bool = True
+        self, X_test: np.ndarray, y_test: np.ndarray, save_visualizations: bool = True
     ) -> Dict:
         """
         Evaluate model on test set.
@@ -194,11 +187,13 @@ class BaseModel:
 
         # Get feature importance if available
         feature_importance = None
-        if hasattr(self.best_model, 'feature_importances_'):
-            feature_importance = pd.DataFrame({
-                'feature': range(X_test.shape[1]),
-                'importance': self.best_model.feature_importances_
-            }).sort_values('importance', ascending=False)
+        if hasattr(self.best_model, "feature_importances_"):
+            feature_importance = pd.DataFrame(
+                {
+                    "feature": range(X_test.shape[1]),
+                    "importance": self.best_model.feature_importances_,
+                }
+            ).sort_values("importance", ascending=False)
 
         # Create comprehensive evaluation report
         report = create_evaluation_report(
@@ -207,17 +202,13 @@ class BaseModel:
             y_pred_proba,
             model_name=self.model_name,
             feature_importance=feature_importance,
-            save_visualizations=save_visualizations
+            save_visualizations=save_visualizations,
         )
 
-        self.test_metrics = report['metrics']
+        self.test_metrics = report["metrics"]
         return report
 
-    def log_to_mlflow(
-        self,
-        params: Optional[Dict] = None,
-        save_model: bool = True
-    ):
+    def log_to_mlflow(self, params: Optional[Dict] = None, save_model: bool = True):
         """
         Log model, parameters, and metrics to MLflow.
 
@@ -231,8 +222,8 @@ class BaseModel:
         with mlflow.start_run(run_name=self.model_name):
             # Log parameters
             if self.cv_results:
-                mlflow.log_params(self.cv_results['best_params'])
-                mlflow.log_metric('cv_best_f1', self.cv_results['best_score'])
+                mlflow.log_params(self.cv_results["best_params"])
+                mlflow.log_metric("cv_best_f1", self.cv_results["best_score"])
 
             if params:
                 mlflow.log_params(params)
@@ -246,7 +237,7 @@ class BaseModel:
             # Log test metrics
             if self.test_metrics:
                 for metric_name, metric_value in self.test_metrics.items():
-                    mlflow.log_metric(f'test_{metric_name}', metric_value)
+                    mlflow.log_metric(f"test_{metric_name}", metric_value)
 
             # Save model
             if save_model:
@@ -265,18 +256,18 @@ class BaseModel:
             filepath = MODELS_DIR / f"{self.model_name.lower().replace(' ', '_')}.pkl"
 
         model_data = {
-            'model': self.best_model,
-            'scaler': self.scaler,
-            'model_name': self.model_name,
-            'baseline_metrics': self.baseline_metrics,
-            'test_metrics': self.test_metrics
+            "model": self.best_model,
+            "scaler": self.scaler,
+            "model_name": self.model_name,
+            "baseline_metrics": self.baseline_metrics,
+            "test_metrics": self.test_metrics,
         }
 
         joblib.dump(model_data, filepath)
         logger.info(f"Saved {self.model_name} to {filepath}")
 
     @classmethod
-    def load(cls, filepath: Path) -> 'BaseModel':
+    def load(cls, filepath: Path) -> "BaseModel":
         """
         Load model from disk.
 
@@ -288,14 +279,11 @@ class BaseModel:
         """
         model_data = joblib.load(filepath)
 
-        instance = cls(
-            model=model_data['model'],
-            model_name=model_data['model_name']
-        )
-        instance.best_model = model_data['model']
-        instance.scaler = model_data.get('scaler')
-        instance.baseline_metrics = model_data.get('baseline_metrics')
-        instance.test_metrics = model_data.get('test_metrics')
+        instance = cls(model=model_data["model"], model_name=model_data["model_name"])
+        instance.best_model = model_data["model"]
+        instance.scaler = model_data.get("scaler")
+        instance.baseline_metrics = model_data.get("baseline_metrics")
+        instance.test_metrics = model_data.get("test_metrics")
 
         logger.info(f"Loaded {instance.model_name} from {filepath}")
         return instance

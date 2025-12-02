@@ -6,8 +6,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.config import RAW_DATA_FILE
-from src.data.preprocessor import preprocess_pipeline
+from src.config import RAW_DATA_FILE  # noqa: E402
+from src.data.preprocessor import preprocess_pipeline  # noqa: E402
 
 if __name__ == "__main__":
     print("Starting data preprocessing pipeline...")

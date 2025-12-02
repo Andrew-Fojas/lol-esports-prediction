@@ -1,31 +1,27 @@
 """Train a single model."""
 
+import argparse
 import sys
 from pathlib import Path
-import argparse
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.models.train import train_model, MODEL_CONFIGS
+from src.models.train import MODEL_CONFIGS, train_model  # noqa: E402
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Train a single model')
+    parser = argparse.ArgumentParser(description="Train a single model")
     parser.add_argument(
-        'model_type',
+        "model_type",
         type=str,
         choices=list(MODEL_CONFIGS.keys()),
-        help='Type of model to train'
+        help="Type of model to train",
     )
     parser.add_argument(
-        '--no-tune',
-        action='store_true',
-        help='Skip hyperparameter tuning'
+        "--no-tune", action="store_true", help="Skip hyperparameter tuning"
     )
     parser.add_argument(
-        '--no-mlflow',
-        action='store_true',
-        help='Disable MLflow tracking'
+        "--no-mlflow", action="store_true", help="Disable MLflow tracking"
     )
 
     args = parser.parse_args()
@@ -35,7 +31,7 @@ if __name__ == "__main__":
     model = train_model(
         model_type=args.model_type,
         tune_hyperparameters=not args.no_tune,
-        mlflow_tracking=not args.no_mlflow
+        mlflow_tracking=not args.no_mlflow,
     )
 
     print(f"\n{args.model_type} training complete!")
