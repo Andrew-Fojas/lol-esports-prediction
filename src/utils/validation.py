@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -24,9 +23,7 @@ class DataValidator:
         self.df = df
         self.issues: List[Dict[str, Any]] = []
 
-    def check_missing_values(
-        self, threshold: float = 0.5
-    ) -> DataValidator:
+    def check_missing_values(self, threshold: float = 0.5) -> DataValidator:
         """
         Check for columns with excessive missing values.
 
@@ -40,14 +37,20 @@ class DataValidator:
         problematic_cols = missing_pct[missing_pct > threshold]
 
         if not problematic_cols.empty:
-            self.issues.append({
-                "type": "missing_values",
-                "severity": "high",
-                "message": f"{len(problematic_cols)} columns exceed missing value threshold",
-                "details": problematic_cols.to_dict()
-            })
+            self.issues.append(
+                {
+                    "type": "missing_values",
+                    "severity": "high",
+                    "message": (
+                        f"{len(problematic_cols)} columns exceed "
+                        "missing value threshold"
+                    ),
+                    "details": problematic_cols.to_dict(),
+                }
+            )
             logger.warning(
-                f"Found {len(problematic_cols)} columns with >{threshold*100}% missing values"
+                f"Found {len(problematic_cols)} columns with "
+                f">{threshold*100}% missing values"
             )
 
         return self
@@ -65,19 +68,19 @@ class DataValidator:
         n_duplicates = self.df.duplicated(subset=subset).sum()
 
         if n_duplicates > 0:
-            self.issues.append({
-                "type": "duplicates",
-                "severity": "medium",
-                "message": f"Found {n_duplicates} duplicate rows",
-                "details": {"count": int(n_duplicates)}
-            })
+            self.issues.append(
+                {
+                    "type": "duplicates",
+                    "severity": "medium",
+                    "message": f"Found {n_duplicates} duplicate rows",
+                    "details": {"count": int(n_duplicates)},
+                }
+            )
             logger.warning(f"Found {n_duplicates} duplicate rows")
 
         return self
 
-    def check_data_types(
-        self, expected_types: Dict[str, type]
-    ) -> DataValidator:
+    def check_data_types(self, expected_types: Dict[str, type]) -> DataValidator:
         """
         Verify column data types match expectations.
 
@@ -92,19 +95,23 @@ class DataValidator:
             if col in self.df.columns:
                 actual_type = self.df[col].dtype
                 if not pd.api.types.is_dtype_equal(actual_type, expected_type):
-                    mismatches.append({
-                        "column": col,
-                        "expected": str(expected_type),
-                        "actual": str(actual_type)
-                    })
+                    mismatches.append(
+                        {
+                            "column": col,
+                            "expected": str(expected_type),
+                            "actual": str(actual_type),
+                        }
+                    )
 
         if mismatches:
-            self.issues.append({
-                "type": "type_mismatch",
-                "severity": "medium",
-                "message": f"{len(mismatches)} columns have unexpected types",
-                "details": mismatches
-            })
+            self.issues.append(
+                {
+                    "type": "type_mismatch",
+                    "severity": "medium",
+                    "message": f"{len(mismatches)} columns have unexpected types",
+                    "details": mismatches,
+                }
+            )
             logger.warning(f"Found {len(mismatches)} type mismatches")
 
         return self
@@ -128,28 +135,30 @@ class DataValidator:
                     (self.df[col] < min_val) | (self.df[col] > max_val)
                 ).sum()
                 if out_of_bounds > 0:
-                    out_of_range.append({
-                        "column": col,
-                        "expected_range": (min_val, max_val),
-                        "violations": int(out_of_bounds)
-                    })
+                    out_of_range.append(
+                        {
+                            "column": col,
+                            "expected_range": (min_val, max_val),
+                            "violations": int(out_of_bounds),
+                        }
+                    )
 
         if out_of_range:
-            self.issues.append({
-                "type": "value_range",
-                "severity": "medium",
-                "message": f"{len(out_of_range)} columns have out-of-range values",
-                "details": out_of_range
-            })
+            self.issues.append(
+                {
+                    "type": "value_range",
+                    "severity": "medium",
+                    "message": f"{len(out_of_range)} columns have out-of-range values",
+                    "details": out_of_range,
+                }
+            )
             logger.warning(
                 f"Found {len(out_of_range)} columns with out-of-range values"
             )
 
         return self
 
-    def check_required_columns(
-        self, required: List[str]
-    ) -> DataValidator:
+    def check_required_columns(self, required: List[str]) -> DataValidator:
         """
         Verify all required columns are present.
 
@@ -162,12 +171,14 @@ class DataValidator:
         missing_cols = set(required) - set(self.df.columns)
 
         if missing_cols:
-            self.issues.append({
-                "type": "missing_columns",
-                "severity": "high",
-                "message": f"Missing {len(missing_cols)} required columns",
-                "details": list(missing_cols)
-            })
+            self.issues.append(
+                {
+                    "type": "missing_columns",
+                    "severity": "high",
+                    "message": f"Missing {len(missing_cols)} required columns",
+                    "details": list(missing_cols),
+                }
+            )
             logger.error(f"Missing required columns: {missing_cols}")
 
         return self
@@ -193,12 +204,17 @@ class DataValidator:
         min_proportion = class_counts.min()
 
         if min_proportion < imbalance_threshold:
-            self.issues.append({
-                "type": "class_imbalance",
-                "severity": "low",
-                "message": f"Severe class imbalance detected (smallest class: {min_proportion:.2%})",
-                "details": class_counts.to_dict()
-            })
+            self.issues.append(
+                {
+                    "type": "class_imbalance",
+                    "severity": "low",
+                    "message": (
+                        f"Severe class imbalance detected "
+                        f"(smallest class: {min_proportion:.2%})"
+                    ),
+                    "details": class_counts.to_dict(),
+                }
+            )
             logger.warning(
                 f"Class imbalance detected. Smallest class: {min_proportion:.2%}"
             )
@@ -217,13 +233,13 @@ class DataValidator:
             "total_columns": len(self.df.columns),
             "issues_found": len(self.issues),
             "issues": self.issues,
-            "is_valid": len(self.issues) == 0
+            "is_valid": len(self.issues) == 0,
         }
 
     def validate_all(
         self,
         required_cols: Optional[List[str]] = None,
-        target_col: Optional[str] = None
+        target_col: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Run all validation checks.

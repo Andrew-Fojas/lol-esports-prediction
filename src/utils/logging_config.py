@@ -22,9 +22,7 @@ def setup_logging(
         format_string: Custom format string for log messages.
     """
     if format_string is None:
-        format_string = (
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        format_string = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     handlers: list[logging.Handler] = [logging.StreamHandler(sys.stdout)]
 

@@ -1,18 +1,19 @@
 """Base model class for consistent training and evaluation."""
 
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
-from typing import Dict, Tuple, Optional, Any
+import logging
+from pathlib import Path
+from typing import Dict, Optional, Tuple
+
 import joblib
 import mlflow
 import mlflow.sklearn
-import logging
-from pathlib import Path
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.preprocessing import StandardScaler
 
-from src.config import RANDOM_STATE, TEST_SIZE, CV_FOLDS, MODELS_DIR
-from src.evaluation import calculate_metrics, calculate_baseline_accuracy, create_evaluation_report
+from src.config import CV_FOLDS, MODELS_DIR, RANDOM_STATE, TEST_SIZE
+from src.evaluation import calculate_baseline_accuracy, create_evaluation_report
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -238,8 +239,9 @@ class BaseModel:
 
             # Log baseline metrics
             if self.baseline_metrics:
-                mlflow.log_metric('baseline_accuracy',
-                                 self.baseline_metrics['baseline_accuracy'])
+                mlflow.log_metric(
+                    "baseline_accuracy", self.baseline_metrics["baseline_accuracy"]
+                )
 
             # Log test metrics
             if self.test_metrics:

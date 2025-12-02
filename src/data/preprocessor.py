@@ -1,15 +1,15 @@
 """Data preprocessing utilities."""
 
-import pandas as pd
-from pathlib import Path
-from typing import Optional
 import logging
+from pathlib import Path
+
+import pandas as pd
 
 from src.config import (
+    COMPLETE_TEAM_DATA_FILE,
     FEATURE_COLUMNS,
     TEAM_DATA_FILE,
-    COMPLETE_TEAM_DATA_FILE,
-    TEAM_METRICS_FILE
+    TEAM_METRICS_FILE,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -141,7 +141,10 @@ def preprocess_pipeline(
 
     logger.info("\n" + "=" * 60)
     logger.info("Preprocessing pipeline completed successfully")
-    logger.info(f"Final dataset: {len(metrics_data):,} rows × {len(metrics_data.columns)} columns")
+    logger.info(
+        f"Final dataset: {len(metrics_data):,} rows × "
+        f"{len(metrics_data.columns)} columns"
+    )
     logger.info("=" * 60)
 
     return metrics_data

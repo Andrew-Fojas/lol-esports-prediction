@@ -1,23 +1,24 @@
 """Model training utilities and configurations."""
 
-import pandas as pd
+import logging
+from pathlib import Path
+from typing import Dict, Optional
+
+import mlflow
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
 from sklearn.ensemble import (
+    BaggingClassifier,
     GradientBoostingClassifier,
     RandomForestClassifier,
-    BaggingClassifier
 )
-import mlflow
-import logging
-from typing import List, Dict, Optional
-from pathlib import Path
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
 
-from src.models.base import BaseModel
-from src.config import RANDOM_STATE, MLFLOW_TRACKING_URI, EXPERIMENT_NAME
+from src.config import EXPERIMENT_NAME, MLFLOW_TRACKING_URI, RANDOM_STATE
 from src.data import load_processed_data
+from src.models.base import BaseModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -144,10 +145,7 @@ def train_model(
     base_model.train(X_train, y_train, tune_hyperparameters=tune_hyperparameters)
 
     # Evaluate model
-    evaluation_report = base_model.evaluate(
-        X_test, y_test,
-        save_visualizations=save_visualizations
-    )
+    base_model.evaluate(X_test, y_test, save_visualizations=save_visualizations)
 
     # Log to MLflow
     if mlflow_tracking:

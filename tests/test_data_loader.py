@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-import pandas as pd
-import pytest
 from pathlib import Path
 
-from src.data.loader import load_raw_data, load_processed_data
+import pandas as pd
+import pytest
+
+from src.data.loader import load_processed_data, load_raw_data
 
 
 class TestLoadRawData:
@@ -21,9 +22,7 @@ class TestLoadRawData:
 
         assert "Raw data file not found" in str(exc_info.value)
 
-    def test_load_raw_data_success(
-        self, temp_dir: Path, sample_raw_data: pd.DataFrame
-    ):
+    def test_load_raw_data_success(self, temp_dir: Path, sample_raw_data: pd.DataFrame):
         """Test successful data loading."""
         test_file = temp_dir / "test_data.csv"
         sample_raw_data.to_csv(test_file, index=False)
@@ -51,10 +50,7 @@ class TestLoadProcessedData:
         non_existent = tmp_path / "non_existent.csv"
 
         # Mock the filepath in the loader module where it's used
-        monkeypatch.setattr(
-            "src.data.loader.PCA_TRANSFORMED_FILE",
-            non_existent
-        )
+        monkeypatch.setattr("src.data.loader.PCA_TRANSFORMED_FILE", non_existent)
 
         with pytest.raises(FileNotFoundError) as exc_info:
             load_processed_data("pca")
